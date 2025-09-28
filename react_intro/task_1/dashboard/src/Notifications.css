@@ -1,8 +1,6 @@
-:root {
-    --main-color: #e01d3f;
-  }
-
-  .Notifications {
-    border: 3px solid var(--main-color);
-    padding: 50px;
+.notification-items {
+    padding: 10px;
+    border: 1px solid #eee;
+    margin: 10px 0;
+    background-color: #f9f9f9;
   }
