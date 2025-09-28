@@ -1,27 +1,34 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-describe('App Component', () => {
-  test('renders the header, body, and footer', () => {
-    const { container } = render(<App />);
-    expect(container.querySelector('.App-header')).toBeInTheDocument();
-    expect(container.querySelector('.App-body')).toBeInTheDocument();
-    expect(container.querySelector('.App-footer')).toBeInTheDocument();
+describe("App Component", () => {
+  test("renders 2 input elements", () => {
+    render(<App />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+
+    // Combined check for both inputs
+    expect([emailInput, passwordInput].every(el => el)).toBe(true);
+  });
+
+  test("renders 2 labels with text Email and Password", () => {
+    render(<App />);
+    const emailLabel = screen.getByText(/email/i);
+    const passwordLabel = screen.getByText(/password/i);
+
+    // Combined check for both labels
+    expect([emailLabel, passwordLabel].every(el => el)).toBe(true);
+  });
+
+  test('renders a button with text "OK"', () => {
+    render(<App />);
+    const button = screen.getByRole("button", { name: /ok/i });
+    expect(button).toBeInTheDocument();
+  });
+
+  test("renders the form element", () => {
+    render(<App />);
+    const form = screen.getByRole("form", { hidden: true });
+    expect(form).toBeInTheDocument();
   });
 });
-
-
-  test('renders the login and footer paragraphs', () => {
-    render(<App />);
-    const bodyText = screen.getByText(/login to access the full dashboard/i);
-    const footerText = screen.getByText(/copyright/i);
-    expect(bodyText).toBeInTheDocument();
-    expect(footerText).toBeInTheDocument();
-  });
-
-  test('renders the Holberton logo image', () => {
-    render(<App />);
-    const image = screen.getByAltText(/holberton logo/i);
-    expect(image).toBeInTheDocument();
-  });
