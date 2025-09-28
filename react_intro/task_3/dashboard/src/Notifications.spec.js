@@ -21,7 +21,7 @@ describe("utils_tests", function () {
         });
     });
     describe("getLatestNotification", function () {
-        it("shold return correct string element", function () {
+        it("should return correct string element", function () {
             const element = "<strong>Urgent requirement</strong> - complete by EOD";
             expect(getLatestNotification()).toEqual(element);
         });

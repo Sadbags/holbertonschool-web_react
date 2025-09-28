@@ -1,5 +1,5 @@
-// Notifications.jsx
-const React = require("react");
+import React from "react";
+import "./Notifications.css";
 
 function Notifications() {
   return (
@@ -9,4 +9,4 @@ function Notifications() {
   );
 }
 
-module.exports = Notifications;
+export default Notifications;
