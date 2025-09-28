@@ -1,7 +1,7 @@
 {
     "name": "dashboard-task3",
-    "version": "0.1.0",
     "private": true,
+    "version": "0.1.0",
     "scripts": {
       "test": "jest"
     },
