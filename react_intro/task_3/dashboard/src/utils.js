@@ -1,11 +1,14 @@
-export function getCurrentYear() {
+// utils.js
+function getFullYear() {
     return new Date().getFullYear();
   }
 
-  export function getFooterCopy(isIndex) {
+  function getFooterCopy(isIndex) {
     return isIndex ? "Holberton School" : "Holberton School main dashboard";
   }
 
-  export function getLatestNotification() {
+  function getLatestNotification() {
     return "<strong>Urgent requirement</strong> - complete by EOD";
   }
+
+  module.exports = { getFullYear, getFooterCopy, getLatestNotification };
