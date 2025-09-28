@@ -1,13 +1,16 @@
-// Return current year
-export const getFullYear = () => {
+function getFullYear() {
     return new Date().getFullYear();
-  };
+  }
 
-  // Return footer text depending on isIndex flag
-  export const getFooterCopy = (isIndex) => {
+  function getFooterCopy(isIndex) {
     if (isIndex === true) {
       return "Holberton School";
     } else {
       return "Holberton School main dashboard";
     }
+  }
+
+  module.exports = {
+    getFullYear,
+    getFooterCopy,
   };
