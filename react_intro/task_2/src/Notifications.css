@@ -1,14 +1,30 @@
-.Notifications {
-	border: 2px dotted var(--holberton-red);
-	padding: 6px 12px;
-	position: relative;
-	margin-top: 12px;
-}
+.notifications {
+    border: 2px dashed red;
+    padding: 10px;
+    margin: 10px;
+  }
 
-li[data-priority="default"] {
-	color: blue;
-}
+  .notifications p {
+    margin: 0 0 10px 0;
+  }
 
-li[data-priority="urgent"] {
-	color: red;
-}
+  .notifications ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+
+  .notifications li[data-priority="default"] {
+    color: blue;
+  }
+
+  .notifications li[data-priority="urgent"] {
+    color: red;
+  }
+
+
+  .notifications button img {
+    width: 10px;
+    height: 10px;
+  }
