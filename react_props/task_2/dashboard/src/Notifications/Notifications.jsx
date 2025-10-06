@@ -3,7 +3,7 @@ import "./Notifications.css";
 import closeButton from "../assets/close-button.png";
 import NotificationItem from "./NotificationItem.jsx";
 
-function Notifications({ notifications = [] }) {
+function Notifications({ notifications }) {
   return (
     <div className="notification-items">
       <button
@@ -39,6 +39,10 @@ Notifications.propTypes = {
       html: PropTypes.shape({ __html: PropTypes.string }),
     })
   ),
+};
+
+Notifications.defaultProps = {
+  notifications: [],
 };
 
 export default Notifications;

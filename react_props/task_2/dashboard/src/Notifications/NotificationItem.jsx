@@ -1,24 +1,18 @@
 import PropTypes from "prop-types";
 
 // NotificationItem renders a notification entry with styling based on props.
-function NotificationItem({ type = "default", html, value }) {
+function NotificationItem({ type, html, value }) {
   const itemStyle = {
     color: type === "urgent" ? "red" : "blue",
   };
 
-  if (html) {
-    return (
-      <li
-        style={itemStyle}
-        data-notification-type={type}
-        dangerouslySetInnerHTML={html}
-      ></li>
-    );
-  }
-
   return (
-    <li style={itemStyle} data-notification-type={type}>
-      {value}
+    <li
+      style={itemStyle}
+      data-notification-type={type}
+      {...(html ? { dangerouslySetInnerHTML: html } : {})}
+    >
+      {!html && value}
     </li>
   );
 }
@@ -29,4 +23,11 @@ NotificationItem.propTypes = {
   value: PropTypes.string,
 };
 
+NotificationItem.defaultProps = {
+  type: "default",
+  value: "",
+  html: null,
+};
+
 export default NotificationItem;
+
