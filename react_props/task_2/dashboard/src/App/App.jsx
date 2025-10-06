@@ -1,17 +1,32 @@
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import "./App.css";
 import Notifications from "../Notifications/Notifications.jsx";
 import Header from "../Header/Header.jsx";
 import Login from "../Login/Login.jsx";
 import Footer from "../Footer/Footer.jsx";
+import { getLatestNotification } from "../utils/utils.js";
 
 function App() {
-  // Creamos el array de notificaciones con los 3 elementos requeridos
-  const notificationsList = [
-    { id: 1, type: "default", value: "New course available" },
-    { id: 2, type: "urgent", value: "New resume available" },
-    { id: 3, type: "urgent", html: { __html: "<strong>Urgent requirement</strong>" } },
-  ];
+  const notificationsList = useMemo(() => {
+    const baseId = Date.now();
+    return [
+      {
+        id: baseId,
+        type: "default",
+        value: "New course available",
+      },
+      {
+        id: baseId + 1,
+        type: "urgent",
+        value: "New resume available",
+      },
+      {
+        id: baseId + 2,
+        type: "urgent",
+        html: { __html: getLatestNotification() },
+      },
+    ];
+  }, []);
 
   return (
     <div className="App">

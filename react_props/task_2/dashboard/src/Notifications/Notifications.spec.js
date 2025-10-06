@@ -28,7 +28,7 @@ describe("Notifications component", () => {
 
     expect(items[0]).toHaveTextContent(/new course available/i);
     expect(items[1]).toHaveTextContent(/new resume available/i);
-    expect(items[2]).toHaveTextContent(/urgent requirement/i);
+    expect(items[2]).toHaveTextContent(/urgent requirement\s*-\s*complete by eod/i);
   });
 
   test("logs to console when close button is clicked", () => {
