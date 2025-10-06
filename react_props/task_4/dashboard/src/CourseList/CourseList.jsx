@@ -2,17 +2,20 @@ import PropTypes from "prop-types";
 import "./CourseList.css";
 import CourseListRow from "./CourseListRow.jsx";
 
-// Renders the list of courses in a table layout
 function CourseList({ courses = [] }) {
   return (
     <table id="CourseList" className="CourseList">
       <thead>
-        <CourseListRow isHeader={true} textFirstCell="Available courses" />
-        <CourseListRow
-          isHeader={true}
-          textFirstCell="Course name"
-          textSecondCell="Credit"
-        />
+        <tr>
+          <CourseListRow isHeader={true} textFirstCell="Available courses" />
+        </tr>
+        <tr>
+          <CourseListRow
+            isHeader={true}
+            textFirstCell="Course name"
+            textSecondCell="Credit"
+          />
+        </tr>
       </thead>
       <tbody>
         {courses.length === 0 ? (
@@ -20,12 +23,12 @@ function CourseList({ courses = [] }) {
             <td colSpan={2}>No course available yet</td>
           </tr>
         ) : (
-          courses.map((c) => (
+          courses.map((course) => (
             <CourseListRow
-              key={c.id}
+              key={course.id}
               isHeader={false}
-              textFirstCell={c.name}
-              textSecondCell={c.credit}
+              textFirstCell={course.name}
+              textSecondCell={course.credit}
             />
           ))
         )}
