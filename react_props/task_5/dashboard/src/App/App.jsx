@@ -39,7 +39,7 @@ function App({ isLoggedIn = false }) {
     <div className="App">
       <Fragment>
         <div className="root-notifications">
-          <Notifications notifications={notificationsList} />
+        <Notifications notifications={notificationsList} displayDrawer={true} />
         </div>
         <Header />
         <div className="red-line" />

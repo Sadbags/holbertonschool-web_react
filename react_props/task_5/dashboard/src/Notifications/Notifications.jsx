@@ -3,13 +3,10 @@ import "./Notifications.css";
 import closeButton from "../assets/close-button.png";
 import NotificationItem from "./NotificationItem.jsx";
 
-function Notifications({ notifications = [], displayDrawer = false }) {
-  const hasNotifications = notifications && notifications.length > 0;
-
+function Notifications({ notifications = [], displayDrawer = true }) {
   return (
     <div className="notifications-root">
-      <div className="notification-title">Your notifications</div>
-
+      <p>Here is the list of notifications</p>
       {displayDrawer && (
         <div className="notification-items">
           <button
@@ -20,24 +17,17 @@ function Notifications({ notifications = [], displayDrawer = false }) {
               console.log("Close button has been clicked");
             }}
           >
-            <img
-              className="notification-close-icon"
-              src={closeButton}
-              alt="Close"
-            />
+            <img className="notification-close-icon" src={closeButton} alt="Close" />
           </button>
 
-          {hasNotifications ? (
-            <>
-              <p>Here is the list of notifications</p>
-              <ul>
-                {notifications.map((notification) => (
-                  <NotificationItem key={notification.id} {...notification} />
-                ))}
-              </ul>
-            </>
-          ) : (
+          {notifications.length === 0 ? (
             <p>No new notification for now</p>
+          ) : (
+            <ul>
+              {notifications.map((notification) => (
+                <NotificationItem key={notification.id} {...notification} />
+              ))}
+            </ul>
           )}
         </div>
       )}
