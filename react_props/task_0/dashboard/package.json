@@ -2,7 +2,6 @@
     "name": "dashboard",
     "private": true,
     "version": "0.0.0",
-    "homepage": "https://gabyriv.github.io/holbertonschool-web_react",
     "type": "module",
     "scripts": {
       "dev": "vite",
