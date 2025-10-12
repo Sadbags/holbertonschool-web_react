@@ -1,3 +1,4 @@
+// File: task_3/dashboard/src/App/App.jsx
 import React, { Component } from "react";
 import Notifications from "../Notifications/Notifications";
 import Header from "../Header/Header";
@@ -44,7 +45,7 @@ class App extends Component {
   }
 
   render() {
-    const { isLoggedIn, logOut } = this.props;
+    const { isLoggedIn } = this.props;
     return (
       <>
         <Notifications listNotifications={listNotifications} />
@@ -61,10 +62,11 @@ class App extends Component {
               <CourseList listCourses={listCourses} />
             </BodySectionWithMarginBottom>
           )}
+          {/* ✅ New Section Below */}
+          <BodySection title="News from the School">
+            <p>Holberton School News goes here</p>
+          </BodySection>
         </div>
-        <BodySection title="News from the School">
-          <p>Some Random Text</p>
-        </BodySection>
 
         <div className="App-footer">
           <Footer />
