@@ -95,5 +95,22 @@ describe("<Notifications />", () => {
         '<li data-notification-type="default">No new notification for now</li>'
       );
     });
+
+    it("when calling the function markAsRead on an instance of the component, the spy is being called with the right message", () => {
+      const wrapper = shallow(<Notifications displayDrawer />);
+
+      console.log = jest.fn();
+
+      const instance = wrapper.instance();
+
+      const id = 5;
+
+      instance.markAsRead(id);
+
+      expect(console.log).toHaveBeenCalledWith(
+        `Notification ${id} has been marked as read`
+      );
+      jest.restoreAllMocks();
+    });
   });
 });
