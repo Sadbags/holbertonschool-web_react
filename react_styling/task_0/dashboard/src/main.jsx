@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App/App"; // cambiar a .jsx si da error
+import App from "./App/App.jsx"; // cambiar a .jsx si da error
 
 import "@fontsource/roboto/400.css"; // Regular
 import "@fontsource/roboto/500.css"; // Medium
