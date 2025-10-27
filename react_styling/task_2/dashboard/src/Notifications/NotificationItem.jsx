@@ -5,7 +5,6 @@ class NotificationItem extends PureComponent {
   render() {
     const { type = "default", html, value, id, markAsRead } = this.props;
 
-    // Usa las variables de color declaradas en main.css
     const itemStyle = {
       color:
         type === "urgent"

@@ -17,19 +17,21 @@ class Notifications extends Component {
 
   render() {
     const { notifications = [], displayDrawer = false } = this.props;
-    const hasNotifications = notifications.length > 0;
+    const hasNotifications = notifications && notifications.length > 0;
 
     return (
-      <div className="p-4 border-2 border-dashed border-[var(--main-color)]">
-        <p className="text-right font-bold mb-2">Your notifications</p>
+      <div className="relative border border-dashed border-[var(--main-color)] p-4 w-[80%] mx-auto mt-6">
+        <div className="absolute right-4 top-2 font-bold">
+          Your notifications
+        </div>
 
         {displayDrawer && (
-          <div className="relative">
+          <div className="mt-8">
             <button
               type="button"
               aria-label="Close"
-              className="absolute top-0 right-0"
               onClick={() => console.log("Close button has been clicked")}
+              className="absolute right-4 top-2"
             >
               <img src={closeButton} alt="Close" className="w-4 h-4" />
             </button>
