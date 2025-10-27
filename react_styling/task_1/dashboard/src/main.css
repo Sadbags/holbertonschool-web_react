@@ -1,0 +1,15 @@
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+/* Variables de color */
+:root {
+  --color-table-header: #deb5b5;
+  --color-table-rows: #cdcdcd;
+}
+
+/* Fuente general */
+@layer base {
+  body {
+    font-family: "Roboto", sans-serif;
+  }
+}
