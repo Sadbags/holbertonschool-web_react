@@ -1,5 +1,7 @@
-@import "tailwindcss";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
 
+/* Roboto como fuente por defecto */
 @layer base {
   body {
     font-family: "Roboto", sans-serif;
