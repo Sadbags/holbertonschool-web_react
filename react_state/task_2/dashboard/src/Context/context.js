@@ -1,6 +1,5 @@
 import React from "react";
 
-// ✅ Default user object
 export const user = {
   email: "",
   password: "",

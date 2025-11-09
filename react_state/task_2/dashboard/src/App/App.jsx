@@ -6,7 +6,7 @@ import Footer from "../Footer/Footer";
 import CourseList from "../CourseList/CourseList";
 import BodySection from "../BodySection/BodySection";
 import BodySectionWithMarginBottom from "../BodySectionWithMarginBottom/BodySectionWithMarginBottom";
-import newContext, { user, logOut } from "../Context/context";
+import AppContext, { user, logOut } from "../Context/context";
 
 class App extends React.Component {
   constructor(props) {
@@ -41,19 +41,13 @@ class App extends React.Component {
     const { user } = this.state;
 
     return (
-      <newContext.Provider value={{ user: this.state.user, logOut: this.state.logOut }}>
+      <AppContext.Provider value={{ user: this.state.user, logOut: this.state.logOut }}>
         <div className="App">
-          <div className="NotificationsContainer">
-            <Notifications />
-          </div>
+          <Notifications />
           <Header />
           <BodySectionWithMarginBottom>
             {!user.isLoggedIn ? (
-              <Login
-                logIn={this.logIn}
-                email={user.email}
-                password={user.password}
-              />
+              <Login logIn={this.logIn} />
             ) : (
               <CourseList />
             )}
@@ -66,7 +60,7 @@ class App extends React.Component {
           </BodySection>
           <Footer />
         </div>
-      </newContext.Provider>
+      </AppContext.Provider>
     );
   }
 }
