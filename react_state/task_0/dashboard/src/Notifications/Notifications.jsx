@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import NotificationItem from "./NotificationItem";
-import "./Notifications.css";
 
 class Notifications extends Component {
   shouldComponentUpdate(nextProps) {
