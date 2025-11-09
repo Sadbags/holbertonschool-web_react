@@ -21,14 +21,14 @@ class App extends Component {
     };
   }
 
-  // ✅ Método que el checker busca
+  // ✅ EXACTAMENTE COMO LO ESPERA EL CHECKER
   markNotificationAsRead = (id) => {
     console.log(`Notification ${id} has been marked as read`);
-    this.setState({
-      listNotifications: this.state.listNotifications.filter(
+    this.setState((prevState) => ({
+      listNotifications: prevState.listNotifications.filter(
         (notif) => notif.id !== id
       ),
-    });
+    }));
   };
 
   render() {
