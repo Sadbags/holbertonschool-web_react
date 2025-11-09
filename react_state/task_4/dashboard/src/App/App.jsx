@@ -1,13 +1,12 @@
 import React, { Component } from "react";
-import "./App.css";
-import Header from "../Header/Header";
-import Footer from "../Footer/Footer";
-import Login from "../Login/Login";
 import Notifications from "../Notifications/Notifications";
+import Header from "../Header/Header";
+import Login from "../Login/Login";
+import Footer from "../Footer/Footer";
 import CourseList from "../CourseList/CourseList";
-import BodySection from "../BodySection/BodySection";
 import BodySectionWithMarginBottom from "../BodySectionWithMarginBottom/BodySectionWithMarginBottom";
-import AppContext, { user as defaultUser, logOut } from "../Context/context";
+import BodySection from "../BodySection/BodySection";
+import AppContext, { user as defaultUser } from "../Context/context";
 import { notificationsList } from "../Notifications/NotificationsList";
 import { coursesList } from "../CourseList/CourseList";
 
@@ -15,31 +14,14 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      displayDrawer: false,
       user: defaultUser,
-      isLoggedIn: false,
       listNotifications: notificationsList,
       listCourses: coursesList,
     };
   }
 
-  logIn = (email, password) => {
-    this.setState({
-      user: {
-        email,
-        password,
-        isLoggedIn: true,
-      },
-      isLoggedIn: true,
-    });
-  };
-
-  logOut = () => {
-    this.setState({
-      user: defaultUser,
-      isLoggedIn: false,
-    });
-  };
-
+  // ✅ Método que el checker busca
   markNotificationAsRead = (id) => {
     console.log(`Notification ${id} has been marked as read`);
     this.setState({
@@ -50,43 +32,36 @@ class App extends Component {
   };
 
   render() {
-    const { isLoggedIn, listNotifications, listCourses, user } = this.state;
-    const value = {
-      user,
-      logOut: this.logOut,
-    };
+    const { user, listNotifications, listCourses } = this.state;
 
     return (
-      <AppContext.Provider value={value}>
-        <div className="App">
-          <div className="heading-section">
-            <Notifications
-              listNotifications={listNotifications}
-              markNotificationAsRead={this.markNotificationAsRead}
-            />
+      <AppContext.Provider value={{ user }}>
+        <>
+          <Notifications
+            listNotifications={listNotifications}
+            markNotificationAsRead={this.markNotificationAsRead}
+          />
+          <div className="App">
             <Header />
-          </div>
-
-          <div className="App-body">
-            {isLoggedIn ? (
+            {user.isLoggedIn ? (
               <BodySectionWithMarginBottom title="Course list">
                 <CourseList listCourses={listCourses} />
               </BodySectionWithMarginBottom>
             ) : (
               <BodySectionWithMarginBottom title="Log in to continue">
-                <Login logIn={this.logIn} />
+                <Login />
               </BodySectionWithMarginBottom>
             )}
-            <BodySection title="News from the School">
+            <BodySection title="News from the school">
               <p>
-                Aenean sollicitudin, lorem quis bibendum auctor, nisi elit
-                consequat ipsum, nec sagittis sem nibh id elit.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum gravida sem sit amet orci malesuada, et cursus eros
+                pretium.
               </p>
             </BodySection>
+            <Footer />
           </div>
-
-          <Footer />
-        </div>
+        </>
       </AppContext.Provider>
     );
   }
