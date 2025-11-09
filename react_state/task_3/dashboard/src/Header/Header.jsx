@@ -22,7 +22,7 @@ class Header extends Component {
         </header>
 
         {user.isLoggedIn && (
-          <section id="logoutSection" className="p-4 text-center sm:text-left">
+          <div id="logoutSection" className="p-4 text-center sm:text-left">
             Welcome <strong>{user.email}</strong>{" "}
             <a
               href="#"
@@ -31,7 +31,7 @@ class Header extends Component {
             >
               (logout)
             </a>
-          </section>
+          </div>
         )}
       </>
     );
