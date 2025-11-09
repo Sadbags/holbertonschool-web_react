@@ -1,84 +1,50 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: props.email || "",
-      password: props.password || "",
-      enableSubmit: false,
-    };
-  }
+function Login({ logIn, email = "", password = "" }) {
+  const [userEmail, setUserEmail] = useState(email);
+  const [userPassword, setUserPassword] = useState(password);
+  const [enableSubmit, setEnableSubmit] = useState(false);
 
-  handleChangeEmail = (e) => {
-    const email = e.target.value;
-    this.setState({ email }, this.validateForm);
+  const handleChangeEmail = (e) => {
+    const value = e.target.value;
+    setUserEmail(value);
+    setEnableSubmit(value !== "" && userPassword.length >= 8);
   };
 
-  handleChangePassword = (e) => {
-    const password = e.target.value;
-    this.setState({ password }, this.validateForm);
+  const handleChangePassword = (e) => {
+    const value = e.target.value;
+    setUserPassword(value);
+    setEnableSubmit(userEmail !== "" && value.length >= 8);
   };
 
-  validateForm = () => {
-    const { email, password } = this.state;
-    const isValidEmail = /\S+@\S+\.\S+/.test(email);
-    const isValidPassword = password.length >= 8;
-    this.setState({ enableSubmit: isValidEmail && isValidPassword });
-  };
-
-  handleLoginSubmit = (e) => {
+  const handleLoginSubmit = (e) => {
     e.preventDefault();
-    const { email, password } = this.state;
-    this.props.logIn(email, password);
+    logIn(userEmail, userPassword);
   };
 
-  render() {
-    const { email, password, enableSubmit } = this.state;
-
-    return (
-      <section className="Login">
-        <h2>Log in to continue</h2>
-        <form onSubmit={this.handleLoginSubmit}>
-          <div>
-            <label htmlFor="email">Email:</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={this.handleChangeEmail}
-            />
-          </div>
-          <div>
-            <label htmlFor="password">Password:</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={this.handleChangePassword}
-            />
-          </div>
-          <input
-            type="submit"
-            value="OK"
-            disabled={!enableSubmit}
-          />
-        </form>
-      </section>
-    );
-  }
+  return (
+    <section className="Login">
+      <h2>Log in to continue</h2>
+      <form onSubmit={handleLoginSubmit}>
+        <div>
+          <label htmlFor="email">Email:</label>
+          <input type="email" id="email" value={userEmail} onChange={handleChangeEmail} />
+        </div>
+        <div>
+          <label htmlFor="password">Password:</label>
+          <input type="password" id="password" value={userPassword} onChange={handleChangePassword} />
+        </div>
+        <input type="submit" value="OK" disabled={!enableSubmit} />
+      </form>
+    </section>
+  );
 }
 
 Login.propTypes = {
   logIn: PropTypes.func.isRequired,
   email: PropTypes.string,
   password: PropTypes.string,
-};
-
-Login.defaultProps = {
-  email: "",
-  password: "",
 };
 
 export default Login;

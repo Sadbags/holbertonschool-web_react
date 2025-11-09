@@ -1,9 +1,9 @@
 import React from "react";
-import Notifications from "../Notifications/Notifications";
 import Header from "../Header/Header";
-import Login from "../Login/Login";
 import Footer from "../Footer/Footer";
+import Login from "../Login/Login";
 import CourseList from "../CourseList/CourseList";
+import Notifications from "../Notifications/Notifications";
 import BodySection from "../BodySection/BodySection";
 import BodySectionWithMarginBottom from "../BodySectionWithMarginBottom/BodySectionWithMarginBottom";
 import AppContext, { user, logOut } from "../Context/context";
@@ -39,23 +39,20 @@ class App extends React.Component {
 
   render() {
     const { user } = this.state;
-
     return (
       <AppContext.Provider value={{ user: this.state.user, logOut: this.state.logOut }}>
         <div className="App">
-          <Notifications />
+          <div className="NotificationsContainer">
+            <Notifications />
+          </div>
           <Header />
           <BodySectionWithMarginBottom>
-            {!user.isLoggedIn ? (
-              <Login logIn={this.logIn} />
-            ) : (
-              <CourseList />
-            )}
+            {user.isLoggedIn ? <CourseList /> : <Login logIn={this.logIn} email={user.email} password={user.password} />}
           </BodySectionWithMarginBottom>
           <BodySection title="News from the School">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.
             </p>
           </BodySection>
           <Footer />
