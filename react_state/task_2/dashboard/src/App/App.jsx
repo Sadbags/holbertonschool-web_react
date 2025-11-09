@@ -6,7 +6,7 @@ import CourseList from "../CourseList/CourseList";
 import Notifications from "../Notifications/Notifications";
 import BodySection from "../BodySection/BodySection";
 import BodySectionWithMarginBottom from "../BodySectionWithMarginBottom/BodySectionWithMarginBottom";
-import AppContext, { user, logOut } from "../Context/context";
+import AppContext, { user } from "../Context/context";
 
 class App extends React.Component {
   constructor(props) {
@@ -40,14 +40,18 @@ class App extends React.Component {
   render() {
     const { user } = this.state;
     return (
-      <AppContext.Provider value={{ user: this.state.user, logOut: this.state.logOut }}>
+      <AppContext.Provider value={this.state}>
         <div className="App">
           <div className="NotificationsContainer">
             <Notifications />
           </div>
           <Header />
           <BodySectionWithMarginBottom>
-            {user.isLoggedIn ? <CourseList /> : <Login logIn={this.logIn} email={user.email} password={user.password} />}
+            {user.isLoggedIn ? (
+              <CourseList />
+            ) : (
+              <Login logIn={this.logIn} email={user.email} password={user.password} />
+            )}
           </BodySectionWithMarginBottom>
           <BodySection title="News from the School">
             <p>
