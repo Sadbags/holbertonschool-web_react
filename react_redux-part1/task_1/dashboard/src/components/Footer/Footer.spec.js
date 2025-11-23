@@ -1,33 +1,45 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { expect, test, jest } from "@jest/globals";
-import Footer from "./Footer.jsx";
-import React from "react";
+import { render, screen } from "@testing-library/react";
+import Footer from "./Footer";
+import { getCurrentYear, getFooterCopy } from "../../utils/utils";
 
-test("renders copyright text", () => {
-  const user = { email: "", password: "", isLoggedIn: false };
-  render(<Footer user={user} logOut={jest.fn()} />);
-  expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
-});
+describe("Footer component", () => {
+  // Default props (not logged in)
+  const defaultUser = {
+    email: "",
+    password: "",
+    isLoggedIn: false,
+  };
 
-test('displays "Contact us" when user is logged out', () => {
-  const user = { email: "", password: "", isLoggedIn: false };
-  render(<Footer user={user} logOut={jest.fn()} />);
-  const contactLink = screen.getByText(/Contact us/i);
-  expect(contactLink).toBeInTheDocument();
-});
+  // The footer should display the Holberton copyright notice.
+  test("renders the footer copy with the current year (index view)", () => {
+    render(<Footer user={defaultUser} />);
+    const footerCopy = screen.getByText(/copyright/i);
+    expect(footerCopy).toBeInTheDocument();
+    const expectedText = `Copyright ${getCurrentYear()} - ${getFooterCopy(
+      false
+    )}`;
+    expect(footerCopy).toHaveTextContent(expectedText);
+  });
 
-test('displays welcome message and logout link when user is logged in', () => {
-  const user = { email: "user@test.com", password: "password123", isLoggedIn: true };
-  const logOutSpy = jest.fn();
+  // Verify "Contact us" link is not displayed when user is logged out
+  test("does not display Contact us link when user is logged out", () => {
+    render(<Footer user={defaultUser} />);
+    const contactLink = screen.queryByText(/contact us/i);
+    expect(contactLink).toBeNull();
+  });
 
-  render(<Footer user={user} logOut={logOutSpy} />);
+  // Verify "Contact us" link is displayed when user is logged in
+  test("displays Contact us link when user is logged in", () => {
+    const loggedInUser = {
+      email: "test@example.com",
+      password: "password123",
+      isLoggedIn: true,
+    };
 
-  const welcomeMessage = screen.getByText(/Welcome user@test.com/i);
-  const logoutLink = screen.getByText(/Logout/i);
+    render(<Footer user={loggedInUser} />);
 
-  expect(welcomeMessage).toBeInTheDocument();
-  expect(logoutLink).toBeInTheDocument();
-
-  fireEvent.click(logoutLink);
-  expect(logOutSpy).toHaveBeenCalled();
+    const contactLink = screen.getByText(/contact us/i);
+    expect(contactLink).toBeInTheDocument();
+    expect(contactLink.tagName).toBe("A");
+  });
 });

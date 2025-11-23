@@ -1,35 +1,37 @@
-import React from "react";
-import { getCurrentYear, getFooterCopy } from "../../utils/utils";
+import PropTypes from "prop-types";
+import { getCurrentYear, getFooterCopy } from "../../utils/utils.js";
 
-function Footer({ user, logOut }) {
+function Footer({ user }) {
   return (
-    <footer className="App-footer text-center text-sm border-t-4 border-[var(--main-color)] mt-10 py-4 text-gray-600">
+    <div className="App-footer text-center italic mt-auto py-4 text-xs md:text-sm">
       <p>
-        Copyright {getCurrentYear()} - {getFooterCopy(true)}
+        Copyright {getCurrentYear()} - {getFooterCopy(false)}
       </p>
-
-      {/* Display contact / logout based on login status */}
-      {user?.isLoggedIn ? (
+      {user.isLoggedIn && (
         <p>
-          Welcome {user.email} (
-          <a
-            href="#logout"
-            onClick={(e) => {
-              e.preventDefault();
-              logOut();
-            }}
-          >
-            Logout
+          <a href="#" className="text-[var(--main-color)] underline">
+            Contact us
           </a>
-          )
-        </p>
-      ) : (
-        <p>
-          <a href="#contact">Contact us</a>
         </p>
       )}
-    </footer>
+    </div>
   );
 }
+
+Footer.propTypes = {
+  user: PropTypes.shape({
+    email: PropTypes.string,
+    password: PropTypes.string,
+    isLoggedIn: PropTypes.bool,
+  }),
+};
+
+Footer.defaultProps = {
+  user: {
+    email: '',
+    password: '',
+    isLoggedIn: false,
+  },
+};
 
 export default Footer;
