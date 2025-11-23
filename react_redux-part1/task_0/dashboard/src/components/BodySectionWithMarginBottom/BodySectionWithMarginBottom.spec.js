@@ -1,37 +1,20 @@
-import { render, screen } from "@testing-library/react";
-import BodySectionWithMarginBottom from "./BodySectionWithMarginBottom";
-import BodySection from "../BodySection/BodySection";
+import { render } from '@testing-library/react';
+import BodySectionWithMarginBottom from './BodySectionWithMarginBottom';
 
-describe("BodySectionWithMarginBottom component", () => {
-  test("contains a div with the class bodySectionWithMargin", () => {
-    const { container } = render(
-      <BodySectionWithMarginBottom title="test title">
-        <p>test children node</p>
-      </BodySectionWithMarginBottom>
-    );
-
-    // Check that the div with the correct class exists
-    const divWithClass = container.querySelector(".bodySectionWithMargin");
-    expect(divWithClass).toBeInTheDocument();
+describe('BodySectionWithMarginBottom', () => {
+  it('contains a div with the class bodySectionWithMargin', () => {
+    const { container } = render(<BodySectionWithMarginBottom title="Test" />);
+    const div = container.querySelector('.bodySectionWithMargin');
+    expect(div).toBeInTheDocument();
   });
 
-  test("renders the BodySection component", () => {
-    const testTitle = "test title";
-    const testContent = "test children node";
-
-    render(
-      <BodySectionWithMarginBottom title={testTitle}>
-        <p>{testContent}</p>
+  it('renders the BodySection component', () => {
+    const { getByText } = render(
+      <BodySectionWithMarginBottom title="Test">
+        <p>Test content</p>
       </BodySectionWithMarginBottom>
     );
-
-    // Verify that BodySection is rendered by checking for its content
-    // The h2 heading should be rendered by BodySection
-    const heading = screen.getByRole("heading", { level: 2 });
-    expect(heading).toBeInTheDocument();
-    expect(heading).toHaveTextContent(testTitle);
-
-    // The children should also be rendered
-    expect(screen.getByText(testContent)).toBeInTheDocument();
+    expect(getByText('Test')).toBeInTheDocument();
+    expect(getByText('Test content')).toBeInTheDocument();
   });
 });

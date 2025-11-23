@@ -1,40 +1,35 @@
-import PropTypes from "prop-types";
-import { getCurrentYear, getFooterCopy } from "../../utils/utils.js";
+import React from "react";
+import { getCurrentYear, getFooterCopy } from "../../utils/utils";
 
-// Footer renders the footer text with the current year and copy information.
-// When user is logged in, displays a "Contact us" link.
-// Refactored to use props instead of Context API for better testing and flexibility.
-function Footer({ user }) {
+function Footer({ user, logOut }) {
   return (
-    <div className="App-footer text-center italic mt-auto py-4 text-xs md:text-sm">
+    <footer className="App-footer text-center text-sm border-t-4 border-[var(--main-color)] mt-10 py-4 text-gray-600">
       <p>
-        Copyright {getCurrentYear()} - {getFooterCopy(false)}
+        Copyright {getCurrentYear()} - {getFooterCopy(true)}
       </p>
-      {user.isLoggedIn && (
+
+      {/* Display contact / logout based on login status */}
+      {user?.isLoggedIn ? (
         <p>
-          <a href="#" className="text-[var(--main-color)] underline">
-            Contact us
+          Welcome {user.email} (
+          <a
+            href="#logout"
+            onClick={(e) => {
+              e.preventDefault();
+              logOut();
+            }}
+          >
+            Logout
           </a>
+          )
+        </p>
+      ) : (
+        <p>
+          <a href="#contact">Contact us</a>
         </p>
       )}
-    </div>
+    </footer>
   );
 }
-
-Footer.propTypes = {
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    password: PropTypes.string,
-    isLoggedIn: PropTypes.bool,
-  }),
-};
-
-Footer.defaultProps = {
-  user: {
-    email: '',
-    password: '',
-    isLoggedIn: false,
-  },
-};
 
 export default Footer;
