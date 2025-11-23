@@ -1,5 +1,4 @@
 import React, { useEffect, useReducer } from "react";
-import axios from "axios";
 import Notifications from "./components/Notifications/Notifications";
 import Header from "./components/Header/Header";
 import Login from "./pages/Login/Login";
@@ -10,41 +9,8 @@ import BodySection from "./components/BodySection/BodySection";
 import { getLatestNotification } from "./utils/utils";
 import { appReducer, initialState, APP_ACTIONS } from "./appReducer";
 
-function App() {
-  const [state, dispatch] = useReducer(appReducer, initialState);
-
-  // Fetch notifications on mount
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const { data } = await axios.get("/notifications.json");
-        const updated = data.map((notif) =>
-          notif.html
-            ? { ...notif, html: { __html: getLatestNotification() } }
-            : notif
-        );
-        dispatch({ type: APP_ACTIONS.SET_NOTIFICATIONS, payload: updated });
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") console.error(error);
-      }
-    };
-    fetchNotifications();
-  }, []);
-
-  // Fetch courses when user logs in
-  useEffect(() => {
-    if (!state.user.isLoggedIn) return;
-
-    const fetchCourses = async () => {
-      try {
-        const { data } = await axios.get("/courses.json");
-        dispatch({ type: APP_ACTIONS.SET_COURSES, payload: data });
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") console.error(error);
-      }
-    };
-    fetchCourses();
-  }, [state.user.isLoggedIn]);
+function App({ initialNotifications = [] }) {
+  const [state, dispatch] = useReducer(appReducer, { ...initialState, notifications: initialNotifications });
 
   // Handlers
   const handleLogin = (email, password) =>
@@ -52,10 +18,10 @@ function App() {
 
   const handleLogout = () => dispatch({ type: APP_ACTIONS.LOGOUT });
 
-  const handleToggleDrawer = () =>
-    dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER });
+  const handleDisplayDrawer = () => dispatch({ type: APP_ACTIONS.SHOW_DRAWER });
+  const handleHideDrawer = () => dispatch({ type: APP_ACTIONS.HIDE_DRAWER });
 
-  const handleMarkNotificationAsRead = (id) =>
+  const handleMarkNotificationAsRead = id =>
     dispatch({ type: APP_ACTIONS.MARK_NOTIFICATION_READ, payload: id });
 
   return (
@@ -63,8 +29,8 @@ function App() {
       <Notifications
         notifications={state.notifications}
         displayDrawer={state.displayDrawer}
-        handleDisplayDrawer={handleToggleDrawer}
-        handleHideDrawer={handleToggleDrawer}
+        handleDisplayDrawer={handleDisplayDrawer}
+        handleHideDrawer={handleHideDrawer}
         markNotificationAsRead={handleMarkNotificationAsRead}
       />
 

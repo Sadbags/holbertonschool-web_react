@@ -1,72 +1,39 @@
-// === appReducer.js ===
 export const APP_ACTIONS = {
     LOGIN: "LOGIN",
     LOGOUT: "LOGOUT",
-    TOGGLE_DRAWER: "TOGGLE_DRAWER",
-    MARK_NOTIFICATION_READ: "MARK_NOTIFICATION_READ",
+    SHOW_DRAWER: "SHOW_DRAWER",
+    HIDE_DRAWER: "HIDE_DRAWER",
     SET_NOTIFICATIONS: "SET_NOTIFICATIONS",
+    MARK_NOTIFICATION_READ: "MARK_NOTIFICATION_READ",
     SET_COURSES: "SET_COURSES",
   };
 
   export const initialState = {
-    displayDrawer: true,
-    user: {
-      email: "",
-      password: "",
-      isLoggedIn: false,
-    },
+    user: { email: "", isLoggedIn: false },
+    displayDrawer: false,
     notifications: [],
     courses: [],
   };
 
-  export function appReducer(state = initialState, action) {
+  export function appReducer(state, action) {
     switch (action.type) {
       case APP_ACTIONS.LOGIN:
-        return {
-          ...state,
-          user: {
-            email: action.payload.email,
-            password: action.payload.password,
-            isLoggedIn: true,
-          },
-        };
-
+        return { ...state, user: { email: action.payload.email, isLoggedIn: true } };
       case APP_ACTIONS.LOGOUT:
-        return {
-          ...state,
-          user: {
-            email: "",
-            password: "",
-            isLoggedIn: false,
-          },
-        };
-
-      case APP_ACTIONS.TOGGLE_DRAWER:
-        return {
-          ...state,
-          displayDrawer: !state.displayDrawer,
-        };
-
+        return { ...state, user: { email: "", isLoggedIn: false } };
+      case APP_ACTIONS.SHOW_DRAWER:
+        return { ...state, displayDrawer: true };
+      case APP_ACTIONS.HIDE_DRAWER:
+        return { ...state, displayDrawer: false };
+      case APP_ACTIONS.SET_NOTIFICATIONS:
+        return { ...state, notifications: action.payload };
       case APP_ACTIONS.MARK_NOTIFICATION_READ:
         return {
           ...state,
-          notifications: state.notifications.filter(
-            (n) => n.id !== action.payload
-          ),
+          notifications: state.notifications.filter(n => n.id !== action.payload),
         };
-
-      case APP_ACTIONS.SET_NOTIFICATIONS:
-        return {
-          ...state,
-          notifications: action.payload,
-        };
-
       case APP_ACTIONS.SET_COURSES:
-        return {
-          ...state,
-          courses: action.payload,
-        };
-
+        return { ...state, courses: action.payload };
       default:
         return state;
     }

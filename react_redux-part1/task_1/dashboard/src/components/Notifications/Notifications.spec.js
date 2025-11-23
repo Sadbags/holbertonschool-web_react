@@ -13,7 +13,20 @@ describe("Notifications Component", () => {
   const mockHide = jest.fn();
   const mockMark = jest.fn();
 
-  test("renders menu item and notifications drawer correctly", () => {
+  test("renders menu item when drawer hidden and notifications drawer when shown", () => {
+    // Menu item visible
+    render(
+      <Notifications
+        notifications={notificationsList}
+        displayDrawer={false}
+        handleDisplayDrawer={mockDisplay}
+        handleHideDrawer={mockHide}
+        markNotificationAsRead={mockMark}
+      />
+    );
+    expect(screen.getByText(/Your notifications/i)).toBeInTheDocument();
+
+    // Drawer visible
     render(
       <Notifications
         notifications={notificationsList}
@@ -23,9 +36,7 @@ describe("Notifications Component", () => {
         markNotificationAsRead={mockMark}
       />
     );
-
-    expect(screen.getByText(/Your notifications/i)).toBeInTheDocument();
-    expect(screen.getByTestId("Notifications")).toBeInTheDocument();
+    expect(screen.getByTestId("notifications")).toBeInTheDocument();
 
     notificationsList.forEach((notif) => {
       if (notif.value) {
@@ -47,7 +58,6 @@ describe("Notifications Component", () => {
         markNotificationAsRead={mockMark}
       />
     );
-
     fireEvent.click(screen.getByText(/Your notifications/i));
     expect(mockDisplay).toHaveBeenCalled();
   });
@@ -62,7 +72,6 @@ describe("Notifications Component", () => {
         markNotificationAsRead={mockMark}
       />
     );
-
     const closeButton = screen.getByLabelText("Close");
     fireEvent.click(closeButton);
     expect(mockHide).toHaveBeenCalled();
@@ -79,12 +88,10 @@ describe("Notifications Component", () => {
       />
     );
 
-    const firstNotif = screen.getByText("New course available");
-    fireEvent.click(firstNotif);
+    fireEvent.click(screen.getByText("New course available"));
     expect(mockMark).toHaveBeenCalledWith(1);
 
-    const htmlNotif = screen.getByText(/Urgent requirement/i);
-    fireEvent.click(htmlNotif);
+    fireEvent.click(screen.getByText(/Urgent requirement/i));
     expect(mockMark).toHaveBeenCalledWith(3);
   });
 
@@ -98,7 +105,6 @@ describe("Notifications Component", () => {
         markNotificationAsRead={mockMark}
       />
     );
-
     expect(screen.getByText(/No new notification for now/i)).toBeInTheDocument();
   });
 });

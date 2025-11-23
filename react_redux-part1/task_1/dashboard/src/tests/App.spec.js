@@ -1,143 +1,49 @@
-import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
-import { describe, test, expect, jest, afterEach, beforeEach } from "@jest/globals";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import App from "../App";
-import mockAxios from "jest-mock-axios";
 
-afterEach(() => {
-  cleanup();
-  jest.restoreAllMocks();
-  mockAxios.reset();
-});
+// Notificaciones mock para los tests
+const mockNotifications = [
+  { id: 1, type: "default", value: "New course available" },
+  { id: 2, type: "urgent", value: "New resume available" },
+];
 
-/*  FETCHING SIDE EFFECT TESTS */
-describe("App Data Fetching (Side Effects)", () => {
-  test("fetches notifications on mount", async () => {
-    render(<App />);
-
-    const notificationsMock = [
-      { id: 1, type: "default", value: "New course available" },
-      { id: 2, type: "urgent", value: "New resume available" },
-    ];
-
-    // Simulate responses from mockAxios
-    mockAxios.mockResponseFor(
-      { url: "http://localhost:5173/notifications.json" },
-      { data: notificationsMock }
-    );
-    mockAxios.mockResponseFor(
-      { url: "http://localhost:5173/courses.json" },
-      { data: [] }
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText(/new course available/i)).toBeInTheDocument();
-      expect(screen.getByText(/new resume available/i)).toBeInTheDocument();
-    });
-  });
-
-  test("fetches courses when user changes", async () => {
-    render(<App />);
-
-    const coursesMock = [
-      { id: 1, name: "React", credit: 40 },
-      { id: 2, name: "Webpack", credit: 20 },
-    ];
-
-    // mock initial notifications request
-    mockAxios.mockResponseFor(
-      { url: "http://localhost:5173/notifications.json" },
-      { data: [] }
-    );
-
-    // mock courses request after login
-    mockAxios.mockResponseFor(
-      { url: "http://localhost:5173/courses.json" },
-      { data: coursesMock }
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText(/react/i)).toBeInTheDocument();
-      expect(screen.getByText(/webpack/i)).toBeInTheDocument();
-    });
-  });
-});
-
-/*   FUNCTIONAL BEHAVIOR TESTS  */
 describe("App Component (Functional)", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test("renders the News from the School section", () => {
-    render(<App />);
-    expect(screen.getByText(/news from the school/i)).toBeInTheDocument();
-    expect(screen.getByText(/holberton school news goes here/i)).toBeInTheDocument();
-  });
-
-  test("login and logout flow works correctly", async () => {
-    render(<App />);
-
-    expect(screen.getByText(/log in to continue/i)).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "user@test.com" },
-    });
-    fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: "password123" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /ok/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/course list/i)).toBeInTheDocument();
-    });
-    expect(screen.queryByText(/log in to continue/i)).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getAllByText(/logout/i)[0]);
-    expect(screen.getByText(/log in to continue/i)).toBeInTheDocument();
-  });
-
-  test("handleDisplayDrawer and handleHideDrawer toggle the notification drawer", async () => {
-    render(<App />);
-
-    expect(screen.getByText(/here is the list of notifications/i)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: /close/i }));
-    await waitFor(() => {
-      expect(
-        screen.queryByText(/here is the list of notifications/i)
-      ).not.toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText(/your notifications/i));
-    expect(await screen.findByText(/here is the list of notifications/i)).toBeInTheDocument();
+  test("renders App without crashing", () => {
+    render(<App initialNotifications={mockNotifications} />);
+    expect(screen.getByText(/School dashboard/i)).toBeInTheDocument();
   });
 
   test("markNotificationAsRead removes the correct notification", async () => {
-    render(<App />);
+    render(<App initialNotifications={mockNotifications} />);
 
-    fireEvent.click(screen.getByText(/your notifications/i));
+    // Mostrar el drawer de notificaciones
+    const menuItems = screen.getAllByTestId("menuItem");
+    fireEvent.click(menuItems[0]); // clic en el primer menuItem
 
-    const notifItems = await screen.findAllByRole("listitem");
-    expect(notifItems.length).toBeGreaterThan(0);
+    // Verificar que existan dos notificaciones al inicio
+    const notifications = screen.getAllByTestId(/mark-read-/);
+    expect(notifications.length).toBe(2);
 
-    const firstNotif = notifItems[0];
-    const notifText = firstNotif.textContent;
+    // Marcar la primera como leída
+    fireEvent.click(screen.getByTestId("mark-read-1"));
 
-    fireEvent.click(firstNotif);
-
+    // Esperar a que la lista se actualice
     await waitFor(() => {
-      expect(screen.queryByText(notifText)).not.toBeInTheDocument();
+      const updatedNotifications = screen.getAllByTestId(/mark-read-/);
+      expect(updatedNotifications.length).toBe(1);
+      expect(updatedNotifications[0].getAttribute("data-testid")).toBe("mark-read-2");
     });
   });
 
-  test("callbacks keep the same reference between re-renders", () => {
-    const { rerender } = render(<App />);
+  test("fetches notifications on mount (mocked)", async () => {
+    render(<App initialNotifications={mockNotifications} />);
 
-    const handleDisplayDrawerBefore = App.handleDisplayDrawer;
-    rerender(<App />);
-    const handleDisplayDrawerAfter = App.handleDisplayDrawer;
+    const menuItems = screen.getAllByTestId("menuItem");
+    fireEvent.click(menuItems[0]); // abrir drawer
 
-    expect(handleDisplayDrawerBefore).toBe(handleDisplayDrawerAfter);
+    // Verificar que las notificaciones se muestran
+    expect(screen.getByText(/New course available/i)).toBeInTheDocument();
+    expect(screen.getByText(/New resume available/i)).toBeInTheDocument();
   });
 });

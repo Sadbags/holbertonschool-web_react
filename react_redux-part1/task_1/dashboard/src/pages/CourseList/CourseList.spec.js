@@ -1,38 +1,38 @@
-import { render, screen } from '@testing-library/react';
-import { test, expect } from "@jest/globals";
-import CourseList from './CourseList';
+import React from "react";
+import { render, screen, within } from "@testing-library/react";
+import CourseList from "./CourseList";
 
-test('Should render the CourseList component without crashing', () => {
-    const props = {
-        courses: [
-            { id: 1, name: 'ES6', credit: 60 },
-            { id: 2, name: 'Webpack', credit: 20 },
-            { id: 3, name: 'React', credit: 40 }
-        ]
-    }
-    render(<CourseList {...props} />)
-})
+describe("CourseList", () => {
+  it("renders 1 row in tbody when given an empty array", () => {
+    render(<CourseList courses={[]} />);
 
-test('Should render the CourseList component with 5 rows', () => {
-    const props = {
-        courses: [
-            { id: 1, name: 'ES6', credit: 60 },
-            { id: 2, name: 'Webpack', credit: 20 },
-            { id: 3, name: 'React', credit: 40 }
-        ]
-    }
-    render(<CourseList {...props} />)
-    const rowElements = screen.getAllByRole('row');
-    expect(rowElements).toHaveLength(5)
-})
+    const table = screen.getByRole("table");
+    const rowgroups = within(table).getAllByRole("rowgroup");
+    const tbody = rowgroups[1]; // tbody is second rowgroup
+    const rows = within(tbody).getAllByRole("row");
 
-test('Should render the CourseList component with 1 rows', () => {
-    const props = {
-        courses: []
-    }
-    render(<CourseList {...props} />)
-    const rowElement = screen.getAllByRole('row');
-    const rowText = screen.getByText('No course available yet');
-    expect(rowElement).toHaveLength(1)
-    expect(rowText).toBeInTheDocument
-})
+    expect(rows).toHaveLength(1);
+    expect(screen.getByText(/no course available yet/i)).toBeInTheDocument();
+  });
+
+  it("renders courses when given a non-empty array", () => {
+    const courses = [
+      { id: 1, name: "ES6", credit: 60 },
+      { id: 2, name: "Webpack", credit: 20 },
+      { id: 3, name: "React", credit: 40 },
+    ];
+
+    render(<CourseList courses={courses} />);
+
+    const table = screen.getByRole("table");
+    const rowgroups = within(table).getAllByRole("rowgroup");
+    const tbody = rowgroups[1];
+    const rows = within(tbody).getAllByRole("row");
+
+    expect(rows).toHaveLength(3);
+    courses.forEach((course) => {
+      expect(screen.getByText(course.name)).toBeInTheDocument();
+      expect(screen.getByText(course.credit.toString())).toBeInTheDocument();
+    });
+  });
+});

@@ -1,45 +1,28 @@
-import React, { memo } from "react";
-import PropTypes from "prop-types";
+import React from "react";
 
 function NotificationItem({ id, type, value, html, markAsRead }) {
-  const colorStyle = {
-    color:
-      type === "default"
-        ? "var(--default-notification-item)"
-        : "var(--urgent-notification-item)",
-  };
-
-  const handleClick = () => {
-    if (markAsRead) markAsRead(id);
-  };
+  if (html) {
+    return (
+      <li
+        data-testid={`mark-read-${id}`}
+        data-notification-type={type}
+        style={{ cursor: "pointer" }}
+        onClick={() => markAsRead(id)}
+        dangerouslySetInnerHTML={html}
+      />
+    );
+  }
 
   return (
     <li
-      data-testid="notification-item"
-      style={colorStyle}
+      data-testid={`mark-read-${id}`}
       data-notification-type={type}
-      dangerouslySetInnerHTML={html ? html : undefined}
-      onClick={handleClick}
+      style={{ cursor: "pointer" }}
+      onClick={() => markAsRead(id)}
     >
-      {!html ? value : null}
+      {value}
     </li>
   );
 }
 
-NotificationItem.propTypes = {
-  id: PropTypes.number.isRequired,
-  type: PropTypes.oneOf(["default", "urgent"]).isRequired,
-  value: PropTypes.string,
-  html: PropTypes.shape({
-    __html: PropTypes.string,
-  }),
-  markAsRead: PropTypes.func.isRequired,
-};
-
-NotificationItem.defaultProps = {
-  type: "default",
-  value: "",
-  html: undefined,
-};
-
-export default memo(NotificationItem);
+export default NotificationItem;
