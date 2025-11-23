@@ -3,6 +3,11 @@ import { login } from '../../features/auth/authSlice';
 import WithLogging from "../../components/HOC/WithLogging.jsx";
 import useLogin from "../../hooks/useLogin.jsx";
 
+/**
+ * Login component - Renders the login form with email and password inputs
+ * Uses Redux to dispatch login action when form is submitted
+ * Uses custom useLogin hook for form state management and validation
+ */
 function Login() {
   // Get dispatch function from Redux
   const dispatch = useDispatch();
