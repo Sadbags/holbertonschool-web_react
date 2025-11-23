@@ -1,45 +1,105 @@
-import { render, screen } from "@testing-library/react";
-import Footer from "./Footer";
-import { getCurrentYear, getFooterCopy } from "../../utils/utils";
+import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import Footer from './Footer';
+import authReducer from '../../features/auth/authSlice';
+import { getCurrentYear } from '../../utils/utils';
 
-describe("Footer component", () => {
-  // Default props (not logged in)
-  const defaultUser = {
-    email: "",
-    password: "",
-    isLoggedIn: false,
+/**
+ * Test suite for Footer component with Redux integration
+ */
+describe('Footer Component', () => {
+  /**
+   * Helper function to create a mock store
+   * @param {boolean} isLoggedIn - Whether user is logged in
+   * @returns {Object} Configured Redux store
+   */
+  const createMockStore = (isLoggedIn = false) => {
+    return configureStore({
+      reducer: {
+        auth: authReducer,
+      },
+      preloadedState: {
+        auth: {
+          user: {
+            email: isLoggedIn ? 'test@example.com' : '',
+            password: '',
+          },
+          isLoggedIn,
+        },
+      },
+    });
   };
 
-  // The footer should display the Holberton copyright notice.
-  test("renders the footer copy with the current year (index view)", () => {
-    render(<Footer user={defaultUser} />);
-    const footerCopy = screen.getByText(/copyright/i);
-    expect(footerCopy).toBeInTheDocument();
-    const expectedText = `Copyright ${getCurrentYear()} - ${getFooterCopy(
-      false
-    )}`;
-    expect(footerCopy).toHaveTextContent(expectedText);
+  describe('Basic rendering', () => {
+    it('should display copyright text with current year', () => {
+      const store = createMockStore(false);
+
+      render(
+        <Provider store={store}>
+          <Footer />
+        </Provider>
+      );
+
+      const currentYear = getCurrentYear();
+      expect(screen.getByText(`Copyright ${currentYear} - Holberton School main dashboard`)).toBeInTheDocument();
+    });
   });
 
-  // Verify "Contact us" link is not displayed when user is logged out
-  test("does not display Contact us link when user is logged out", () => {
-    render(<Footer user={defaultUser} />);
-    const contactLink = screen.queryByText(/contact us/i);
-    expect(contactLink).toBeNull();
+  describe('Contact us link visibility', () => {
+    it('should display Contact us link when user is logged in', () => {
+      const store = createMockStore(true);
+
+      render(
+        <Provider store={store}>
+          <Footer />
+        </Provider>
+      );
+
+      // Verify Contact us link is displayed
+      const contactLink = screen.getByText('Contact us');
+      expect(contactLink).toBeInTheDocument();
+      expect(contactLink.tagName).toBe('A');
+    });
+
+    it('should not display Contact us link when user is not logged in', () => {
+      const store = createMockStore(false);
+
+      render(
+        <Provider store={store}>
+          <Footer />
+        </Provider>
+      );
+
+      // Verify Contact us link is not displayed
+      expect(screen.queryByText('Contact us')).not.toBeInTheDocument();
+    });
   });
 
-  // Verify "Contact us" link is displayed when user is logged in
-  test("displays Contact us link when user is logged in", () => {
-    const loggedInUser = {
-      email: "test@example.com",
-      password: "password123",
-      isLoggedIn: true,
-    };
+  describe('State changes', () => {
+    it('should show Contact us link after login', () => {
+      const store = createMockStore(false);
 
-    render(<Footer user={loggedInUser} />);
+      const { rerender } = render(
+        <Provider store={store}>
+          <Footer />
+        </Provider>
+      );
 
-    const contactLink = screen.getByText(/contact us/i);
-    expect(contactLink).toBeInTheDocument();
-    expect(contactLink.tagName).toBe("A");
+      // Initially no Contact us link
+      expect(screen.queryByText('Contact us')).not.toBeInTheDocument();
+
+      // Update store state to logged in
+      const loggedInStore = createMockStore(true);
+
+      rerender(
+        <Provider store={loggedInStore}>
+          <Footer />
+        </Provider>
+      );
+
+      // Now Contact us link should be visible
+      expect(screen.getByText('Contact us')).toBeInTheDocument();
+    });
   });
 });

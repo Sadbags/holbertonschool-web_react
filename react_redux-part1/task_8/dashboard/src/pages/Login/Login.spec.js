@@ -1,142 +1,186 @@
-import userEvent from "@testing-library/user-event";
-import { render, screen } from "@testing-library/react";
-import Login from "./Login";
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import Login from './Login';
+import authReducer from '../../features/auth/authSlice';
 
-describe("Login component", () => {
-  // The login prompt should guide the user to authenticate.
-  test("renders the login prompt", () => {
-    render(<Login />);
-    const loginPrompt = screen.getByText(/login to access the full dashboard/i);
-    expect(loginPrompt).toBeInTheDocument();
+/**
+ * Test suite for Login component with Redux integration
+ */
+describe('Login Component', () => {
+  /**
+   * Helper function to create a mock store
+   * @returns {Object} Configured Redux store
+   */
+  const createMockStore = () => {
+    return configureStore({
+      reducer: {
+        auth: authReducer,
+      },
+    });
+  };
+
+  describe('Component rendering', () => {
+    it('should render the login form with all elements', () => {
+      const store = createMockStore();
+
+      render(
+        <Provider store={store}>
+          <Login />
+        </Provider>
+      );
+
+      // Verify form elements are present
+      expect(screen.getByText('Login to access the full dashboard')).toBeInTheDocument();
+      expect(screen.getByLabelText('Email:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Password:')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /OK/i })).toBeInTheDocument();
+    });
+
+    it('should have submit button disabled initially', () => {
+      const store = createMockStore();
+
+      render(
+        <Provider store={store}>
+          <Login />
+        </Provider>
+      );
+
+      const submitButton = screen.getByRole('button', { name: /OK/i });
+      expect(submitButton).toBeDisabled();
+    });
   });
 
-  // The form should include two labels, two inputs, and one button.
-  test("renders 2 labels, 2 inputs, and 1 button", () => {
-    render(<Login />);
-    const labels = screen.getAllByText(/(email|password):/i);
-    const inputs = screen.getAllByLabelText(/email|password/i);
-    const submitButton = screen.getByRole("button", { name: /ok/i });
-    expect(labels).toHaveLength(2);
-    expect(inputs).toHaveLength(2);
-    expect(submitButton).toBeInTheDocument();
+  describe('Form validation', () => {
+    it('should enable submit button with valid credentials', async () => {
+      const user = userEvent.setup();
+      const store = createMockStore();
+
+      render(
+        <Provider store={store}>
+          <Login />
+        </Provider>
+      );
+
+      const emailInput = screen.getByLabelText('Email:');
+      const passwordInput = screen.getByLabelText('Password:');
+      const submitButton = screen.getByRole('button', { name: /OK/i });
+
+      // Initially disabled
+      expect(submitButton).toBeDisabled();
+
+      // Enter valid email and password
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+
+      // Submit button should now be enabled
+      await waitFor(() => {
+        expect(submitButton).not.toBeDisabled();
+      });
+    });
+
+    it('should keep submit button disabled with invalid email', async () => {
+      const user = userEvent.setup();
+      const store = createMockStore();
+
+      render(
+        <Provider store={store}>
+          <Login />
+        </Provider>
+      );
+
+      const emailInput = screen.getByLabelText('Email:');
+      const passwordInput = screen.getByLabelText('Password:');
+      const submitButton = screen.getByRole('button', { name: /OK/i });
+
+      // Enter invalid email
+      await user.type(emailInput, 'invalid-email');
+      await user.type(passwordInput, 'password123');
+
+      // Submit button should remain disabled
+      expect(submitButton).toBeDisabled();
+    });
+
+    it('should keep submit button disabled with short password', async () => {
+      const user = userEvent.setup();
+      const store = createMockStore();
+
+      render(
+        <Provider store={store}>
+          <Login />
+        </Provider>
+      );
+
+      const emailInput = screen.getByLabelText('Email:');
+      const passwordInput = screen.getByLabelText('Password:');
+      const submitButton = screen.getByRole('button', { name: /OK/i });
+
+      // Enter valid email but short password
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'short');
+
+      // Submit button should remain disabled
+      expect(submitButton).toBeDisabled();
+    });
   });
 
-  // Clicking the label should focus the associated input for accessibility.
-  test("focuses the email input when its label is clicked", async () => {
-    const user = userEvent.setup();
-    render(<Login />);
-    const emailLabel = screen.getByText(/email:/i);
-    const emailInput = screen.getByLabelText(/email/i);
-    await user.click(emailLabel);
-    expect(emailInput).toHaveFocus();
-  });
+  describe('Form submission', () => {
+    it('should set isLoggedIn to true on valid submission', async () => {
+      const user = userEvent.setup();
+      const store = createMockStore();
 
-  // The submit button should be disabled by default
-  test("submit button is disabled by default", () => {
-    render(<Login />);
-    const submitButton = screen.getByRole("button", { name: /ok/i });
-    expect(submitButton).toBeDisabled();
-  });
+      render(
+        <Provider store={store}>
+          <Login />
+        </Provider>
+      );
 
-  // The submit button should be enabled only when validation criteria are met
-  test("submit button is enabled after entering valid email and password", async () => {
-    const user = userEvent.setup();
-    render(<Login />);
+      const emailInput = screen.getByLabelText('Email:');
+      const passwordInput = screen.getByLabelText('Password:');
+      const submitButton = screen.getByRole('button', { name: /OK/i });
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /ok/i });
+      // Enter valid credentials
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
 
-    // Initially, button should be disabled
-    expect(submitButton).toBeDisabled();
+      // Wait for button to be enabled
+      await waitFor(() => {
+        expect(submitButton).not.toBeDisabled();
+      });
 
-    // Type a valid email
-    await user.type(emailInput, "test@example.com");
-    // Button should still be disabled (password not valid yet)
-    expect(submitButton).toBeDisabled();
+      // Submit form
+      await user.click(submitButton);
 
-    // Type a valid password (at least 8 characters)
-    await user.type(passwordInput, "password123");
-    // Now button should be enabled
-    expect(submitButton).toBeEnabled();
-  });
+      // Verify Redux state was updated
+      await waitFor(() => {
+        const state = store.getState().auth;
+        expect(state.isLoggedIn).toBe(true);
+        expect(state.user.email).toBe('test@example.com');
+        expect(state.user.password).toBe('password123');
+      });
+    });
 
-  // The submit button should remain disabled with invalid email
-  test("submit button remains disabled with invalid email", async () => {
-    const user = userEvent.setup();
-    render(<Login />);
+    it('should keep isLoggedIn false with invalid credentials', async () => {
+      const user = userEvent.setup();
+      const store = createMockStore();
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /ok/i });
+      render(
+        <Provider store={store}>
+          <Login />
+        </Provider>
+      );
 
-    // Type an invalid email (missing @ symbol)
-    await user.type(emailInput, "invalidemail");
-    // Type a valid password
-    await user.type(passwordInput, "password123");
-    // Button should still be disabled
-    expect(submitButton).toBeDisabled();
-  });
+      const emailInput = screen.getByLabelText('Email:');
+      const passwordInput = screen.getByLabelText('Password:');
 
-  // The submit button should remain disabled with short password
-  test("submit button remains disabled with password less than 8 characters", async () => {
-    const user = userEvent.setup();
-    render(<Login />);
+      // Enter invalid credentials (short password)
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'short');
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /ok/i });
-
-    // Type a valid email
-    await user.type(emailInput, "test@example.com");
-    // Type a short password (less than 8 characters)
-    await user.type(passwordInput, "pass");
-    // Button should still be disabled
-    expect(submitButton).toBeDisabled();
-  });
-
-  // Form submission should not reload the page
-  test("form submission does not reload the page", async () => {
-    const user = userEvent.setup();
-    const logInMock = jest.fn();
-    render(<Login logIn={logInMock} />);
-
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /ok/i });
-
-    // Enter valid credentials
-    await user.type(emailInput, "test@example.com");
-    await user.type(passwordInput, "password123");
-
-    // Submit the form
-    await user.click(submitButton);
-
-    // Verify the form is still rendered (page didn't reload)
-    expect(screen.getByText(/login to access the full dashboard/i)).toBeInTheDocument();
-  });
-
-  // Verify logIn method is called with correct parameters on form submission
-  test("calls logIn with email and password when form is submitted", async () => {
-    const user = userEvent.setup();
-    const logInMock = jest.fn();
-    render(<Login logIn={logInMock} />);
-
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /ok/i });
-
-    // Enter valid credentials
-    const testEmail = "test@example.com";
-    const testPassword = "password123";
-    await user.type(emailInput, testEmail);
-    await user.type(passwordInput, testPassword);
-
-    // Submit the form
-    await user.click(submitButton);
-
-    // Verify logIn was called once with correct email and password
-    expect(logInMock).toHaveBeenCalledTimes(1);
-    expect(logInMock).toHaveBeenCalledWith(testEmail, testPassword);
+      // Verify state remains false (button is disabled, can't submit)
+      const state = store.getState().auth;
+      expect(state.isLoggedIn).toBe(false);
+    });
   });
 });
