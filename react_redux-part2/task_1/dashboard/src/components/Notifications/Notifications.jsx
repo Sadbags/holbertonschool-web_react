@@ -4,9 +4,17 @@ import { markNotificationAsRead } from '../../features/notifications/notificatio
 import closeButton from "../../assets/close-icon.png";
 import NotificationItem from "../NotificationItem/NotificationItem.jsx";
 
+/**
+ * Notifications component - Renders the notification system with drawer functionality
+ * Uses Redux to manage notifications data and loading state
+ * Visibility control moved to local DOM manipulation to prevent unnecessary re-renders
+ * Displays loading indicator during data fetching for better user experience
+ * Wrapped with React.memo for performance optimization
+ */
 function Notifications() {
-  // Get notifications state from Redux store
+  // Get notifications and loading state from Redux store
   const notifications = useSelector((state) => state.notifications.notifications);
+  const loading = useSelector((state) => state.notifications.loading);
 
   // Get dispatch function to dispatch actions
   const dispatch = useDispatch();
@@ -14,6 +22,11 @@ function Notifications() {
   // Create reference to drawer DOM element for visibility control
   const DrawerRef = useRef(null);
 
+  /**
+   * Handle toggling the notifications drawer visibility
+   * Uses DOM manipulation instead of Redux state to prevent re-renders
+   * Toggles opacity and visibility styles directly on the element
+   */
   const handleToggleDrawer = () => {
     if (DrawerRef.current) {
       const currentOpacity = DrawerRef.current.style.opacity;
@@ -81,7 +94,10 @@ function Notifications() {
           />
         </button>
 
-        {hasNotifications ? (
+        {/* Show loading indicator while fetching notifications */}
+        {loading ? (
+          <p className="m-0 font-medium text-[#333] text-sm md:text-base">Loading...</p>
+        ) : hasNotifications ? (
           <>
             <p className="m-0 font-medium text-[#333] text-sm md:text-base">Here is the list of notifications</p>
             <ul className="m-0 pl-5 list-disc max-[912px]:list-none max-[912px]:pl-0 w-full">
@@ -102,4 +118,7 @@ function Notifications() {
   );
 }
 
+// Wrap component with React.memo for memoization
+// This provides the same performance optimization as PureComponent
+// Component only re-renders when props change (shallow comparison)
 export default memo(Notifications);

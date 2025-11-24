@@ -20,10 +20,11 @@ describe('Notifications Component', () => {
   /**
    * Helper function to create a mock store
    * @param {Array} notifications - Initial notifications array
+   * @param {boolean} loading - Loading state (default: false)
    * @returns {Object} Configured Redux store
    * Note: displayDrawer removed - visibility now controlled via DOM manipulation
    */
-  const createMockStore = (notifications = []) => {
+  const createMockStore = (notifications = [], loading = false) => {
     return configureStore({
       reducer: {
         notifications: notificationsReducer,
@@ -31,6 +32,7 @@ describe('Notifications Component', () => {
       preloadedState: {
         notifications: {
           notifications,
+          loading,
         },
       },
     });
@@ -109,6 +111,103 @@ describe('Notifications Component', () => {
         expect(screen.getByText('API notification 1')).toBeInTheDocument();
         expect(screen.getByText('API notification 2')).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('Loading state', () => {
+    it('should display "Loading..." when loading is true', () => {
+      const store = createMockStore([], true);
+
+      render(
+        <Provider store={store}>
+          <Notifications />
+        </Provider>
+      );
+
+      // Verify loading indicator is displayed
+      expect(screen.getByText('Loading...')).toBeInTheDocument();
+    });
+
+    it('should not display notifications when loading is true', () => {
+      const mockNotifications = [
+        { id: 1, type: 'default', value: 'Test notification' },
+      ];
+      const store = createMockStore(mockNotifications, true);
+
+      render(
+        <Provider store={store}>
+          <Notifications />
+        </Provider>
+      );
+
+      // Verify loading indicator is displayed
+      expect(screen.getByText('Loading...')).toBeInTheDocument();
+      // Verify notifications list is not displayed
+      expect(screen.queryByText('Here is the list of notifications')).not.toBeInTheDocument();
+      expect(screen.queryByText('Test notification')).not.toBeInTheDocument();
+    });
+
+    it('should display loading indicator during fetch and then show notifications', async () => {
+      const store = createMockStore([]);
+
+      render(
+        <Provider store={store}>
+          <Notifications />
+        </Provider>
+      );
+
+      // Initially no loading indicator
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+
+      // Dispatch fetchNotifications action
+      store.dispatch(fetchNotifications());
+
+      // Should show loading indicator
+      await waitFor(() => {
+        expect(screen.getByText('Loading...')).toBeInTheDocument();
+      });
+
+      // Mock API response
+      const mockNotifications = [
+        { id: 1, type: 'default', value: 'Loaded notification' },
+      ];
+
+      mockAxios.mockResponse({ data: mockNotifications });
+
+      // Loading should be removed and notifications displayed
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+        expect(screen.getByText('Loaded notification')).toBeInTheDocument();
+      });
+    });
+
+    it('should hide loading indicator when fetch fails', async () => {
+      const store = createMockStore([]);
+
+      render(
+        <Provider store={store}>
+          <Notifications />
+        </Provider>
+      );
+
+      // Dispatch fetchNotifications action
+      store.dispatch(fetchNotifications());
+
+      // Should show loading indicator
+      await waitFor(() => {
+        expect(screen.getByText('Loading...')).toBeInTheDocument();
+      });
+
+      // Mock API error
+      mockAxios.mockError(new Error('Network error'));
+
+      // Loading should be removed
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      // Should show "No new notification for now" since fetch failed
+      expect(screen.getByText('No new notification for now')).toBeInTheDocument();
     });
   });
 

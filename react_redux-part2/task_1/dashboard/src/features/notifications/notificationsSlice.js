@@ -12,8 +12,16 @@ const ENDPOINTS = {
   notifications: `${API_BASE_URL}/notifications.json`,
 };
 
+/**
+ * Initial state for notifications
+ * Contains notifications array and loading state
+ * Note: displayDrawer removed to prevent unnecessary re-renders
+ * Visibility is now controlled via DOM manipulation in the component
+ * Loading state tracks the fetch operation status
+ */
 const initialState = {
   notifications: [],
+  loading: false,
 };
 
 /**
@@ -68,11 +76,26 @@ const notificationsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       /**
+       * Handle pending state of fetchNotifications thunk
+       * Sets loading to true when the fetch request starts
+       */
+      .addCase(fetchNotifications.pending, (state) => {
+        state.loading = true;
+      })
+      /**
        * Handle fulfilled state of fetchNotifications thunk
-       * Updates notifications array with fetched data
+       * Updates notifications array with fetched data and sets loading to false
        */
       .addCase(fetchNotifications.fulfilled, (state, action) => {
+        state.loading = false;
         state.notifications = action.payload;
+      })
+      /**
+       * Handle rejected state of fetchNotifications thunk
+       * Sets loading to false when the fetch request fails
+       */
+      .addCase(fetchNotifications.rejected, (state) => {
+        state.loading = false;
       });
   },
 });
